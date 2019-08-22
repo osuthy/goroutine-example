@@ -4,13 +4,12 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
-	// "sync"
-	// "io/ioutil"
-	// "reflect"
 )
 
 func main() {
 	var currentFileTime int64
+	channel := make(chan string)
+
 
 	for {
 		file, error := os.Stat("src/main.go")
@@ -20,18 +19,21 @@ func main() {
 		}
 
 		modTime := file.ModTime().Unix()
+
 		if (modTime != currentFileTime) {
 
-			fmt.Println(modTime)
+			// fmt.Println(modTime)
 			
-			go func() {
-
+			go func(ch chan string) {
 				cmd := exec.Command("go", "run", "src/main.go")
 				out, _ := cmd.Output()
-				fmt.Println(string(out))
-				
-				}()
-			}
+				ch <- string(out)
+			}(channel)
+		}
+
+			go func(ch chan string) {
+    			fmt.Println(<-ch)
+			}(channel)
 			
 		currentFileTime = modTime
 	}
