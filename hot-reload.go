@@ -32,7 +32,7 @@ func main() {
 		}
 
 			go func(ch chan string) {
-    			fmt.Println(<-ch)
+				fmt.Println(<-ch)
 			}(channel)
 			
 		currentFileTime = modTime
